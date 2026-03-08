@@ -28,7 +28,7 @@ export default function RootLayout({
       className={`${publicSans.className} antialiased scroll-smooth`}
       style={{ colorScheme: 'dark' }}
     >
-      <body className="min-h-[100dvh] bg-[#070707] text-white antialiased">
+      <body className="min-h-[100dvh] bg-[#000000] text-white antialiased">
         <SWRConfig
           value={{
             fallback: {

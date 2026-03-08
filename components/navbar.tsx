@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState, Suspense } from 'react';
-import { Button } from '@/components/ui/button';
 import { ChevronDown, Home, LogOut, Github, ChevronRight } from 'lucide-react';
 import {
   DropdownMenu,
@@ -18,6 +17,36 @@ import useSWR, { mutate } from 'swr';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+function UnauthenticatedActions() {
+  return (
+    <div className="flex items-center gap-3 text-sm font-semibold text-white">
+      <a
+        href="https://github.com/livekit/agents"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hidden md:flex items-center gap-1 rounded-full border border-[#27272a] bg-[#070707] px-4 py-2 text-[#a1a1aa] transition hover:border-white hover:text-white"
+      >
+        <Github className="h-4 w-4" />
+        <span className="font-medium">livekit / agents</span>
+        <span className="text-[#71717a]">9.6K</span>
+      </a>
+      <Link
+        href="/pricing"
+        className="rounded-full border border-[#27272a] px-4 py-2 text-sm text-[#a1a1aa] transition hover:border-white hover:text-white"
+      >
+        Contact sales
+      </Link>
+      <Link
+        href="/sign-in"
+        className="flex items-center gap-2 rounded-full bg-[#00e5ff] px-4 py-2 text-sm font-semibold text-[#070707] shadow-[0_0_20px_rgba(0,229,255,0.35)]"
+      >
+        Start building
+        <ChevronRight className="h-4 w-4" />
+      </Link>
+    </div>
+  );
+}
+
 function UserMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: user } = useSWR<User>('/api/user', fetcher);
@@ -30,40 +59,7 @@ function UserMenu() {
   }
 
   if (!user) {
-    return (
-      <>
-        {/* GitHub block — gray text */}
-        <a
-          href="https://github.com/livekit/agents"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:inline-flex items-center gap-1.5 text-sm text-[#a1a1aa] hover:text-white transition-colors"
-        >
-          <Github className="h-4 w-4" />
-          <span>livekit / agents</span>
-          <span className="text-[#71717a]">9.6K</span>
-        </a>
-        <Link
-          href="/pricing"
-          className="inline-flex w-full items-center justify-center rounded-lg border border-[#27272a] bg-[#070707] px-4 py-2 text-center text-sm font-semibold text-[#a1a1aa] tracking-tight transition-all duration-500 hover:border-white hover:text-white"
-        >
-          Contact sales
-        </Link>
-        <Link
-          href="/sign-in"
-          className="inline-flex items-center justify-center gap-2 overflow-hidden rounded-md px-4 py-2 border text-sm font-semibold"
-          style={{
-            borderColor: 'rgba(31, 213, 249, 0)',
-            backgroundColor: '#1FD5F9',
-            filter: 'drop-shadow(rgba(31, 213, 249, 0.25) 0px 0px 8px)',
-            color: '#070707'
-          }}
-        >
-          <ChevronRight className="h-4 w-4 rotate-[-90deg]" />
-          Start building
-        </Link>
-      </>
-    );
+    return <UnauthenticatedActions />;
   }
 
   return (
@@ -105,43 +101,40 @@ function UserMenu() {
 export function Navbar() {
   return (
     <header className="sticky top-0 left-0 z-[100] w-full border-b border-[#1a1a1a] bg-[#070707]/70 py-1 backdrop-blur-lg transition-all duration-300 ease-out">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link
-          href="/"
-          className="flex items-center text-white hover:opacity-90 transition-opacity font-semibold text-lg"
-        >
-          LiveKit
-        </Link>
-
-        {/* Center nav: Developers, Company, Customers, Pricing */}
-        <nav className="hidden lg:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-          <button className="flex items-center gap-1 text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#1FD5F9]">
-            Developers
-            <ChevronDown className="h-4 w-4 ml-1" />
-          </button>
-          <button className="flex items-center gap-1 text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#1FD5F9]">
-            Company
-            <ChevronDown className="h-4 w-4 ml-1" />
-          </button>
+      <div className="max-w-7xl mx-auto flex w-full items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-8">
           <Link
-            href="/pricing"
-            className="text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#1FD5F9]"
+            href="/"
+            className="flex items-center text-white hover:opacity-90 transition-opacity font-semibold text-lg"
           >
-            Customers
+            LiveKit
           </Link>
-          <Link
-            href="/pricing"
-            className="text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#1FD5F9]"
-          >
-            Pricing
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <Suspense fallback={<div className="h-9" />}>
-            <UserMenu />
-          </Suspense>
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold">
+            <button className="flex items-center gap-1 text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]">
+              Developers
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            <button className="flex items-center gap-1 text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]">
+              Company
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            <Link
+              href="/pricing"
+              className="text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]"
+            >
+              Customers
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]"
+            >
+              Pricing
+            </Link>
+          </nav>
         </div>
+        <Suspense fallback={<div className="h-9 w-40 rounded-full bg-[#1a1a1a]" />}>
+          <UserMenu />
+        </Suspense>
       </div>
     </header>
   );
