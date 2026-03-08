@@ -32,21 +32,21 @@ export function Terminal() {
   };
 
   return (
-    <div className="w-full rounded-lg shadow-lg overflow-hidden bg-gray-900 text-white font-mono text-sm relative">
+    <div className="w-full rounded-md overflow-hidden bg-[#0a0a0a] border border-[#1a1a1a] text-white font-mono text-sm relative">
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27272a]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27272a]"></div>
+            <div className="w-3 h-3 rounded-full bg-[#27272a]"></div>
           </div>
           <button
             onClick={copyToClipboard}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-[#a1a1aa] hover:text-white transition-colors"
             aria-label="Copy to clipboard"
           >
             {copied ? (
-              <Check className="h-5 w-5" />
+              <Check className="h-5 w-5 text-[#1FD5F9]" />
             ) : (
               <Copy className="h-5 w-5" />
             )}
@@ -58,7 +58,8 @@ export function Terminal() {
               key={index}
               className={`${index > terminalStep ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
             >
-              <span className="text-green-400">$</span> {step}
+              <span className="text-[#1FD5F9]">$</span>{' '}
+              <span className="text-[#a1a1aa]">{step}</span>
             </div>
           ))}
         </div>

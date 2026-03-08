@@ -81,10 +81,10 @@ function TeamMembersSkeleton() {
       <CardContent>
         <div className="animate-pulse space-y-4 mt-1">
           <div className="flex items-center space-x-4">
-            <div className="size-8 rounded-full bg-gray-200"></div>
+            <div className="size-8 rounded-full bg-[#27272a]"></div>
             <div className="space-y-2">
-              <div className="h-4 w-32 bg-gray-200 rounded"></div>
-              <div className="h-3 w-14 bg-gray-200 rounded"></div>
+              <div className="h-4 w-32 bg-[#27272a] rounded"></div>
+              <div className="h-3 w-14 bg-[#27272a] rounded"></div>
             </div>
           </div>
         </div>
@@ -241,7 +241,7 @@ function InviteTeamMember() {
           )}
           <Button
             type="submit"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className="bg-[#22c55e] text-black hover:bg-[#22c55e]/90"
             disabled={isInvitePending || !isOwner}
           >
             {isInvitePending ? (
@@ -272,7 +272,7 @@ function InviteTeamMember() {
 export default function SettingsPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium mb-6">Team Settings</h1>
+      <h1 className="text-lg lg:text-2xl font-medium text-white mb-6">Team Settings</h1>
       <Suspense fallback={<SubscriptionSkeleton />}>
         <ManageSubscription />
       </Suspense>

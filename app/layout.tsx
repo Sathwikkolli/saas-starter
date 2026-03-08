@@ -1,19 +1,21 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Manrope } from 'next/font/google';
+import { Public_Sans } from 'next/font/google';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 
 export const metadata: Metadata = {
-  title: 'Next.js SaaS Starter',
-  description: 'Get started quickly with Next.js, Postgres, and Stripe.'
+  title: 'Build voice, video, and physical AI | LiveKit',
+  description:
+    'An open source framework and developer platform for building, testing, deploying, scaling, and observing agents in production.'
 };
 
 export const viewport: Viewport = {
-  maximumScale: 1
+  maximumScale: 1,
+  themeColor: '#070707'
 };
 
-const manrope = Manrope({ subsets: ['latin'] });
+const publicSans = Public_Sans({ subsets: ['latin'] });
 
 export default function RootLayout({
   children
@@ -23,14 +25,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
+      className={`${publicSans.className} antialiased scroll-smooth`}
+      style={{ colorScheme: 'dark' }}
     >
-      <body className="min-h-[100dvh] bg-gray-50">
+      <body className="min-h-[100dvh] bg-[#070707] text-white antialiased">
         <SWRConfig
           value={{
             fallback: {
-              // We do NOT await here
-              // Only components that read this data will suspend
               '/api/user': getUser(),
               '/api/team': getTeamForUser()
             }
