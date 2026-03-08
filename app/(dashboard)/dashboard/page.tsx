@@ -1,287 +1,266 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState, useEffect } from 'react';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter
-} from '@/components/ui/card';
-import { customerPortalAction } from '@/lib/payments/actions';
-import { useActionState } from 'react';
-import { TeamDataWithMembers, User } from '@/lib/db/schema';
-import { removeTeamMember, inviteTeamMember } from '@/app/(login)/actions';
-import useSWR from 'swr';
-import { Suspense } from 'react';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Loader2, PlusCircle } from 'lucide-react';
+  ChevronRight,
+  ChevronDown,
+  KeyRound,
+  Bot,
+  Radio,
+  Phone,
+  Info,
+  RefreshCw,
+  Clock,
+  ExternalLink,
+} from 'lucide-react';
 
-type ActionState = {
-  error?: string;
-  success?: string;
-};
+const getStartedCards = [
+  {
+    title: 'Project API keys',
+    description: 'Create and manage access keys to integrate LiveKit into your app',
+    icon: KeyRound,
+    externalLink: false,
+  },
+  {
+    title: 'AI Agents',
+    description: 'Build and deploy multimodal and voice AI agents',
+    icon: Bot,
+    externalLink: false,
+  },
+  {
+    title: 'Voice AI quickstart',
+    description: 'Build your first voice AI agent in under 10 minutes',
+    icon: Radio,
+    externalLink: true,
+  },
+  {
+    title: 'Telephony integration',
+    description: 'Let your voice AI agent make and receive phone calls',
+    icon: Phone,
+    externalLink: true,
+  },
+];
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const statCards = [
+  { title: 'Connection Success' },
+  { title: 'Platforms' },
+  { title: 'Connection Type' },
+  { title: 'Top Countries' },
+];
 
-function SubscriptionSkeleton() {
-  return (
-    <Card className="mb-8 h-[140px]">
-      <CardHeader>
-        <CardTitle>Team Subscription</CardTitle>
-      </CardHeader>
-    </Card>
-  );
+const expandableSections = [
+  'Participants',
+  'Agents',
+  'Telephony',
+  'Data transfer',
+  'Rooms',
+  'Egress',
+  'Ingress',
+];
+
+/* Reusable skeleton pulse block */
+function Skel({ className }: { className: string }) {
+  return <div className={`animate-pulse rounded bg-[var(--dash-skeleton)] ${className}`} />;
 }
 
-function ManageSubscription() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
-
+function PageSkeleton() {
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>Team Subscription</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <div className="mb-4 sm:mb-0">
-              <p className="font-medium">
-                Current Plan: {teamData?.planName || 'Free'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {teamData?.subscriptionStatus === 'active'
-                  ? 'Billed monthly'
-                  : teamData?.subscriptionStatus === 'trialing'
-                  ? 'Trial period'
-                  : 'No active subscription'}
-              </p>
-            </div>
-            <form action={customerPortalAction}>
-              <Button type="submit" variant="outline">
-                Manage Subscription
-              </Button>
-            </form>
-          </div>
+    <div className="flex flex-col min-h-full bg-[var(--dash-bg)] text-[var(--dash-text)]">
+      {/* Header skeleton */}
+      <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-[var(--dash-border)]">
+        <div className="space-y-2">
+          <Skel className="h-3 w-28" />
+          <Skel className="h-7 w-36" />
         </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function TeamMembersSkeleton() {
-  return (
-    <Card className="mb-8 h-[140px]">
-      <CardHeader>
-        <CardTitle>Team Members</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="animate-pulse space-y-4 mt-1">
-          <div className="flex items-center space-x-4">
-            <div className="size-8 rounded-full bg-[#27272a]"></div>
-            <div className="space-y-2">
-              <div className="h-4 w-32 bg-[#27272a] rounded"></div>
-              <div className="h-3 w-14 bg-[#27272a] rounded"></div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 mt-1">
+          <Skel className="h-6 w-36" />
+          <Skel className="h-6 w-28" />
+          <Skel className="h-6 w-6 rounded-full" />
+          <Skel className="h-6 w-24" />
         </div>
-      </CardContent>
-    </Card>
-  );
-}
+      </div>
 
-function TeamMembers() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
-  const [removeState, removeAction, isRemovePending] = useActionState<
-    ActionState,
-    FormData
-  >(removeTeamMember, {});
-
-  const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
-    return user.name || user.email || 'Unknown User';
-  };
-
-  if (!teamData?.teamMembers?.length) {
-    return (
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Team Members</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No team members yet.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>Team Members</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-4">
-          {teamData.teamMembers.map((member, index) => (
-            <li key={member.id} className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  {/* 
-                    This app doesn't save profile images, but here
-                    is how you'd show them:
-
-                    <AvatarImage
-                      src={member.user.image || ''}
-                      alt={getUserDisplayName(member.user)}
-                    />
-                  */}
-                  <AvatarFallback>
-                    {getUserDisplayName(member.user)
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">
-                    {getUserDisplayName(member.user)}
-                  </p>
-                  <p className="text-sm text-muted-foreground capitalize">
-                    {member.role}
-                  </p>
+      <div className="flex flex-col gap-5 p-6">
+        {/* Get started skeleton */}
+        <div>
+          <Skel className="h-3 w-20 mb-3" />
+          <div className="grid grid-cols-4 gap-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded border border-[var(--dash-border)] bg-[var(--dash-card)] px-4 py-4 flex items-start gap-3">
+                <Skel className="h-8 w-8 shrink-0 rounded" />
+                <div className="flex-1 space-y-2 pt-0.5">
+                  <Skel className="h-3.5 w-3/4" />
+                  <Skel className="h-3 w-full" />
+                  <Skel className="h-3 w-2/3" />
                 </div>
               </div>
-              {index > 1 ? (
-                <form action={removeAction}>
-                  <input type="hidden" name="memberId" value={member.id} />
-                  <Button
-                    type="submit"
-                    variant="outline"
-                    size="sm"
-                    disabled={isRemovePending}
-                  >
-                    {isRemovePending ? 'Removing...' : 'Remove'}
-                  </Button>
-                </form>
-              ) : null}
-            </li>
+            ))}
+          </div>
+        </div>
+
+        {/* Stat cards skeleton */}
+        <div className="grid grid-cols-4 gap-3">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="rounded border border-[var(--dash-border)] bg-[var(--dash-card)] p-4" style={{ minHeight: 155 }}>
+              <Skel className="h-3 w-32 mb-4" />
+              <Skel className="h-3 w-48 mt-auto" />
+            </div>
           ))}
-        </ul>
-        {removeState?.error && (
-          <p className="text-red-500 mt-4">{removeState.error}</p>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+
+        {/* Expandable sections skeleton */}
+        <div className="rounded border border-[var(--dash-border)] overflow-hidden">
+          {[...Array(7)].map((_, i) => (
+            <div key={i} className={i < 6 ? 'border-b border-[var(--dash-border)]' : ''}>
+              <div className="flex items-center gap-2 px-4 py-3">
+                <Skel className="h-4 w-4 rounded" />
+                <Skel className="h-3.5 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
-function InviteTeamMemberSkeleton() {
-  return (
-    <Card className="h-[260px]">
-      <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
-      </CardHeader>
-    </Card>
-  );
-}
+export default function OverviewPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
+  const [dismissed, setDismissed] = useState(false);
 
-function InviteTeamMember() {
-  const { data: user } = useSWR<User>('/api/user', fetcher);
-  const isOwner = user?.role === 'owner';
-  const [inviteState, inviteAction, isInvitePending] = useActionState<
-    ActionState,
-    FormData
-  >(inviteTeamMember, {});
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 750);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const toggleSection = (label: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+
+  if (isLoading) return <PageSkeleton />;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form action={inviteAction} className="space-y-4">
-          <div>
-            <Label htmlFor="email" className="mb-2">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter email"
-              required
-              disabled={!isOwner}
-            />
-          </div>
-          <div>
-            <Label>Role</Label>
-            <RadioGroup
-              defaultValue="member"
-              name="role"
-              className="flex space-x-4"
-              disabled={!isOwner}
-            >
-              <div className="flex items-center space-x-2 mt-2">
-                <RadioGroupItem value="member" id="member" />
-                <Label htmlFor="member">Member</Label>
-              </div>
-              <div className="flex items-center space-x-2 mt-2">
-                <RadioGroupItem value="owner" id="owner" />
-                <Label htmlFor="owner">Owner</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          {inviteState?.error && (
-            <p className="text-red-500">{inviteState.error}</p>
-          )}
-          {inviteState?.success && (
-            <p className="text-green-500">{inviteState.success}</p>
-          )}
-          <Button
-            type="submit"
-            className="bg-[#22c55e] text-black hover:bg-[#22c55e]/90"
-            disabled={isInvitePending || !isOwner}
-          >
-            {isInvitePending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Inviting...
-              </>
-            ) : (
-              <>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Invite Member
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-      {!isOwner && (
-        <CardFooter>
-          <p className="text-sm text-muted-foreground">
-            You must be a team owner to invite new members.
+    <div className="flex flex-col min-h-full bg-[var(--dash-bg)] text-[var(--dash-text)]">
+      {/* Top header */}
+      <header className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-[var(--dash-border)]">
+        <div>
+          <p className="text-xs text-[var(--dash-text-4)]">
+            Demo1 / <span className="text-[var(--dash-text-2)]">Overview</span>
           </p>
-        </CardFooter>
-      )}
-    </Card>
-  );
-}
+          <h1 className="text-2xl font-semibold text-[var(--dash-text)] mt-0.5">Overview</h1>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-[var(--dash-text-4)] mt-1">
+          <span className="flex items-center gap-1.5">
+            <RefreshCw className="h-3 w-3" />
+            Last updated 5 min ago
+          </span>
+          <button className="flex items-center gap-1.5 rounded border border-[var(--dash-border)] px-2.5 py-1 hover:border-[var(--dash-border-3)] transition-colors">
+            Auto-refresh off
+            <ChevronDown className="h-3 w-3" />
+          </button>
+          <Clock className="h-3.5 w-3.5" />
+          <button className="flex items-center gap-1.5 rounded border border-[var(--dash-border)] px-2.5 py-1 hover:border-[var(--dash-border-3)] transition-colors">
+            Past 7 days
+            <ChevronDown className="h-3 w-3" />
+          </button>
+        </div>
+      </header>
 
-export default function SettingsPage() {
-  return (
-    <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium text-white mb-6">Team Settings</h1>
-      <Suspense fallback={<SubscriptionSkeleton />}>
-        <ManageSubscription />
-      </Suspense>
-      <Suspense fallback={<TeamMembersSkeleton />}>
-        <TeamMembers />
-      </Suspense>
-      <Suspense fallback={<InviteTeamMemberSkeleton />}>
-        <InviteTeamMember />
-      </Suspense>
-    </section>
+      <div className="flex flex-col gap-5 p-6">
+        {/* Get started */}
+        {!dismissed && (
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[var(--dash-text-4)]">
+                Get started
+              </p>
+              <button
+                onClick={() => setDismissed(true)}
+                className="text-xs text-[var(--dash-text-4)] hover:text-[var(--dash-text)] transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {getStartedCards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <article
+                    key={card.title}
+                    className="flex items-start gap-3 rounded border border-[var(--dash-border)] bg-[var(--dash-card)] px-4 py-4 cursor-pointer hover:border-[var(--dash-border-2)] transition-colors"
+                  >
+                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[var(--dash-border)] bg-[var(--dash-hover)]">
+                      <Icon className="h-4 w-4 text-[var(--dash-text-3)]" />
+                    </div>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <p className="flex items-center gap-1 text-sm font-medium text-[var(--dash-text)] leading-snug">
+                        {card.title}
+                        {card.externalLink && (
+                          <ExternalLink className="h-3 w-3 text-[var(--dash-text-4)] shrink-0" />
+                        )}
+                      </p>
+                      <p className="text-xs text-[var(--dash-text-4)] leading-relaxed">
+                        {card.description}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Stat cards */}
+        <section className="grid grid-cols-4 gap-3">
+          {statCards.map((card) => (
+            <article
+              key={card.title}
+              className="flex flex-col rounded border border-[var(--dash-border)] bg-[var(--dash-card)] p-4"
+              style={{ minHeight: 155 }}
+            >
+              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--dash-text-4)]">
+                <span>{card.title}</span>
+                <Info className="h-3 w-3 text-[var(--dash-text-6)]" />
+              </div>
+              <div className="flex flex-1 items-center justify-center">
+                <p className="text-xs text-[var(--dash-text-6)]">No data for the selected time range.</p>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        {/* Expandable sections */}
+        <section className="rounded border border-[var(--dash-border)] overflow-hidden">
+          {expandableSections.map((label, idx) => {
+            const isOpen = openSections.has(label);
+            const isLast = idx === expandableSections.length - 1;
+            return (
+              <div key={label} className={!isLast ? 'border-b border-[var(--dash-border)]' : ''}>
+                <button
+                  onClick={() => toggleSection(label)}
+                  className="flex w-full items-center gap-2 px-4 py-3 text-sm font-medium text-[var(--dash-text-2)] transition-colors hover:bg-[var(--dash-card)]"
+                >
+                  <ChevronRight
+                    className={`h-4 w-4 text-[var(--dash-text-5)] transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                  />
+                  <span>{label}</span>
+                </button>
+                {isOpen && (
+                  <div className="border-t border-[var(--dash-border)] px-6 py-6 text-xs text-[var(--dash-text-5)]">
+                    No data available
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </section>
+      </div>
+    </div>
   );
 }

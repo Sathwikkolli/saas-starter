@@ -9,6 +9,7 @@ import {
   teams,
   teamMembers,
   activityLogs,
+  emailLoginTokens,
   type NewUser,
   type NewTeam,
   type NewTeamMember,
@@ -17,6 +18,7 @@ import {
   invitations
 } from '@/lib/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
+import { createRawToken, hashToken, sendMagicLink } from '@/lib/auth/magic-link';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createCheckoutSession } from '@/lib/payments/stripe';
@@ -48,6 +50,34 @@ const signInSchema = z.object({
   email: z.string().email().min(3).max(255),
   password: z.string().min(8).max(100)
 });
+
+const requestMagicLinkSchema = z.object({
+  email: z.string().email().min(3).max(255)
+});
+
+export const requestMagicLink = validatedAction(
+  requestMagicLinkSchema,
+  async (data) => {
+    const email = data.email.toLowerCase().trim();
+
+    const rawToken = createRawToken();
+    const tokenHash = hashToken(rawToken);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await db.insert(emailLoginTokens).values({
+      email,
+      tokenHash,
+      expiresAt,
+      used: false
+    });
+
+    await sendMagicLink(email, rawToken);
+
+    return {
+      success: 'Sign-in link sent. Check your email.'
+    };
+  }
+);
 
 export const signIn = validatedAction(signInSchema, async (data, formData) => {
   const { email, password } = data;

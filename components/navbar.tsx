@@ -100,33 +100,33 @@ function UserMenu() {
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 left-0 z-[100] w-full border-b border-[#1a1a1a] bg-[#070707]/70 py-1 backdrop-blur-lg transition-all duration-300 ease-out">
-      <div className="max-w-7xl mx-auto flex w-full items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-8">
+    <header className="sticky top-0 left-0 z-[100] w-full border-b border-[#121212] bg-[#050505]">
+      <div className="mx-auto flex h-[78px] w-full max-w-[1240px] items-center justify-between gap-6 px-8">
+        <div className="flex items-center gap-10">
           <Link
             href="/"
-            className="flex items-center text-white hover:opacity-90 transition-opacity font-semibold text-lg"
+            className="flex items-center text-[18px] leading-none font-semibold tracking-[-0.02em] text-white"
           >
             LiveKit
           </Link>
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold">
+          <nav className="hidden lg:flex items-center gap-10 text-[16px] font-semibold text-white">
             <button className="flex items-center gap-1 text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]">
               Developers
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3" />
             </button>
             <button className="flex items-center gap-1 text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]">
               Company
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3" />
             </button>
             <Link
               href="/pricing"
-              className="text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]"
+              className="font-semibold text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]"
             >
               Customers
             </Link>
             <Link
               href="/pricing"
-              className="text-sm font-semibold text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]"
+              className="font-semibold text-white transition-colors duration-200 ease-out hover:text-[#00e5ff]"
             >
               Pricing
             </Link>

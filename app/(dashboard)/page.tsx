@@ -1,126 +1,75 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ChevronRight } from 'lucide-react';
 
-// LiveKit.io design tokens from inspected HTML/CSS:
-// Background: #070707 (theme-color) | Accent: #1FD5F9 (rgb(31, 213, 249)) | Headline glow: rgb(3, 92, 109)
-// Button: bg #1FD5F9, text black (text-bg1), drop-shadow(rgba(31, 213, 249, 0.25) 0px 0px 8px)
-// Headline: font-light, cyan words with filter: drop-shadow(rgb(3, 92, 109) 0px 0px 8px)
+const backgroundDots = Array.from({ length: 60 }, (_, row) =>
+  Array.from({ length: 90 }, (_, col) => ({ row, col }))
+).flat();
 
-const ACCENT = '#1FD5F9';
-const ACCENT_GLOW = 'rgb(3, 92, 109)';
+const heroDots = Array.from({ length: 12 }, (_, row) =>
+  Array.from({ length: 12 }, (_, col) => ({ row, col }))
+).flat();
+
+const activeHeroDots = new Set(['1-4', '2-4', '3-4', '4-4', '5-4']);
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#070707]">
-      <section className="relative overflow-hidden py-8">
-        <div className="min-h-[320px]">
-          <div className="flex flex-col items-center justify-center gap-8 pt-24 lg:pb-0">
-            {/* Central visual: 11x11 grid (matches livekit.io grid-template-columns: repeat(11, 1fr)) */}
-            <div className="relative z-50 mx-auto grid min-h-[220px] w-full max-w-md place-items-center gap-8">
-              <div className="bg-[#070707] relative rounded-lg p-0 w-full max-w-md aspect-square flex items-center justify-center p-4">
-                <div
-                  className="grid gap-[9px] w-full max-w-[280px] aspect-square"
-                  style={{ gridTemplateColumns: 'repeat(11, 1fr)' }}
-                >
-                  {Array.from({ length: 121 }).map((_, i) => {
-                    const highlighted = [50, 60, 61, 71, 72, 100].includes(i);
-                    return (
-                      <div
-                        key={i}
-                        className="rounded-none size-[3px]"
-                        style={{
-                          backgroundColor: highlighted ? ACCENT : '#27272a',
-                          boxShadow: highlighted
-                            ? '0 0 6.8px 2px rgba(31, 213, 249, 0.2)'
-                            : undefined
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+    <main className="relative min-h-[calc(100vh-72px)] overflow-hidden bg-[#050505]">
+      <div className="pointer-events-none absolute inset-0">
+        {backgroundDots.map(({ row, col }) => (
+          <span
+            key={`${row}-${col}`}
+            className="absolute h-[2px] w-[2px] rounded-full bg-[#0f1418]"
+            style={{
+              left: `${14 + col * 0.8}%`,
+              top: `${20 + row * 0.7}%`,
+              opacity: row > 45 ? 0.08 : 0.22
+            }}
+          />
+        ))}
+      </div>
 
-            <div className="px-6">
-              <div className="mx-auto w-full max-w-7xl flex items-center justify-center">
-                <div className="space-y-8 w-full max-w-4xl text-center">
-                  {/* Headline: font-light, Build + cyan "voice," "video," "physical" "AI" with drop-shadow */}
-                  <div className="space-y-2">
-                    <h1 className="z-20 tracking-tight text-pretty text-4xl font-light text-white lg:text-5xl">
-                      Build{' '}
-                      <span
-                        style={{
-                          color: ACCENT,
-                          filter: `drop-shadow(${ACCENT_GLOW} 0px 0px 8px)`
-                        }}
-                      >
-                        voice,{' '}
-                      </span>
-                      <span
-                        style={{
-                          color: ACCENT,
-                          filter: `drop-shadow(${ACCENT_GLOW} 0px 0px 8px)`
-                        }}
-                      >
-                        video,{' '}
-                      </span>
-                      and{' '}
-                      <span
-                        style={{
-                          color: ACCENT,
-                          filter: `drop-shadow(${ACCENT_GLOW} 0px 0px 8px)`
-                        }}
-                      >
-                        physical{' '}
-                      </span>
-                      <span
-                        style={{
-                          color: ACCENT,
-                          filter: `drop-shadow(${ACCENT_GLOW} 0px 0px 8px)`
-                        }}
-                      >
-                        AI{' '}
-                      </span>
-                      agents
-                    </h1>
-                  </div>
-                  <p className="font-normal text-[#a1a1aa] pt-2 text-center text-base text-pretty lg:text-xl max-w-2xl mx-auto">
-                    An open source framework and developer platform for
-                    building, testing, deploying, scaling, and observing agents
-                    in production.
-                  </p>
-
-                  {/* CTAs: Primary #1FD5F9 + black text + drop-shadow, Secondary outlined */}
-                  <div className="w-full space-y-4">
-                    <div className="mx-auto grid max-w-md grid-cols-1 gap-4 md:grid-cols-2">
-                      <Link
-                        href="/sign-in"
-                        className="flex items-center justify-center gap-2 overflow-hidden rounded-md px-4 py-2 border basis-1/2"
-                        style={{
-                          borderColor: 'rgba(31, 213, 249, 0)',
-                          backgroundColor: ACCENT,
-                          filter: 'drop-shadow(rgba(31, 213, 249, 0.25) 0px 0px 8px)'
-                        }}
-                      >
-                        <ChevronRight className="h-4 w-4 rotate-[-90deg] text-black" />
-                        <span className="text-sm font-semibold text-black">
-                          Start building
-                        </span>
-                      </Link>
-                      <Button
-                        asChild
-                        variant="outline"
-                        className="basis-1/2 rounded-lg border border-[#27272a] bg-[#070707] text-[#a1a1aa] hover:border-white hover:text-white text-sm font-semibold"
-                      >
-                        <Link href="/sign-in">Talk to LiveKit Agent</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center px-6 pb-24 pt-20 text-center">
+        <div className="mb-14 h-[188px] w-[188px] rounded-[12px] border border-[#1f2b31] bg-[#06090b]/80 p-[18px] shadow-[0_0_50px_rgba(0,0,0,0.45)]">
+          <div className="relative grid h-full w-full grid-cols-12 gap-[8px]">
+            {heroDots.map(({ row, col }) => {
+              const key = `${row}-${col}`;
+              const active = activeHeroDots.has(key);
+              return (
+                <span
+                  key={key}
+                  className={`h-[4px] w-[4px] rounded-none ${active ? 'bg-[#45d9ff]' : 'bg-[#1f2327]'}`}
+                  style={active ? { boxShadow: '0 0 8px rgba(69,217,255,0.7)' } : undefined}
+                />
+              );
+            })}
           </div>
+        </div>
+
+        <h1 className="max-w-[1120px] text-[60px] font-light leading-[1.12] tracking-[-0.03em] text-white">
+          Build <span className="text-[#22d6ff]">voice, video,</span> and{' '}
+          <span className="text-[#22d6ff]">physical AI</span> agents
+        </h1>
+
+        <p className="mt-6 max-w-[1020px] text-[20px] font-normal leading-[1.45] text-[#d0d0d5]">
+          An open source framework and developer platform for building, testing, deploying, scaling,
+          and observing agents in production.
+        </p>
+
+        <div className="mt-12 flex items-center justify-center gap-4">
+          <Link
+            href="/sign-in"
+            className="inline-flex h-[46px] min-w-[186px] items-center justify-center rounded-[10px] bg-[#26d7ff] px-7 text-[16px] font-semibold text-[#071017] shadow-[0_0_24px_rgba(38,215,255,0.35)]"
+          >
+            Start building
+          </Link>
+          <Link
+            href="/sign-in"
+            className="inline-flex h-[46px] min-w-[186px] items-center justify-center gap-2 rounded-[10px] border border-[#1f2328] bg-[#060606] px-6 text-[16px] font-semibold text-[#d6d6dc]"
+          >
+            <span className="inline-flex h-4 w-4 items-center justify-center rounded-sm border border-[#1f2328] text-[10px]">
+              T
+            </span>
+            Talk to LiveKit Agent
+          </Link>
         </div>
       </section>
     </main>
