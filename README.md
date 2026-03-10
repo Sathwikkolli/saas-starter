@@ -1,119 +1,96 @@
-# Next.js SaaS Starter
+# SaaS Starter Platform (Next.js + Stripe)
 
-This is a starter template for building a SaaS application using **Next.js** with support for authentication, Stripe integration for payments, and a dashboard for logged-in users.
+A full-stack SaaS platform built using **Next.js**, featuring authentication, team management, subscription billing with Stripe, and a secure dashboard for authenticated users.
 
-**Demo: [https://next-saas-start.vercel.app/](https://next-saas-start.vercel.app/)**
+This project demonstrates the architecture required for modern SaaS applications including **role-based access control, payment workflows, protected APIs, and database-backed user management**.
 
-## Features
+**Live Demo:**  
+https://saas-starter-nine-inky.vercel.app
 
-- Marketing landing page (`/`) with animated Terminal element
-- Pricing page (`/pricing`) which connects to Stripe Checkout
-- Dashboard pages with CRUD operations on users/teams
-- Basic RBAC with Owner and Member roles
-- Subscription management with Stripe Customer Portal
-- Email/password authentication with JWTs stored to cookies
-- Global middleware to protect logged-in routes
-- Local middleware to protect Server Actions or validate Zod schemas
-- Activity logging system for any user events
+---
 
-## Tech Stack
+# Overview
 
-- **Framework**: [Next.js](https://nextjs.org/)
-- **Database**: [Postgres](https://www.postgresql.org/)
-- **ORM**: [Drizzle](https://orm.drizzle.team/)
-- **Payments**: [Stripe](https://stripe.com/)
-- **UI Library**: [shadcn/ui](https://ui.shadcn.com/)
+This project implements a SaaS application skeleton where users can:
 
-## Getting Started
+- Create accounts
+- Manage teams
+- Subscribe to paid plans
+- Access protected dashboard features
+- Manage billing through Stripe
 
-```bash
-git clone https://github.com/nextjs/saas-starter
-cd saas-starter
-pnpm install
-```
+The application uses a **modern full-stack Next.js architecture** with server actions, middleware, and PostgreSQL-backed data storage.
 
-## Running Locally
+---
 
-[Install](https://docs.stripe.com/stripe-cli) and log in to your Stripe account:
+# Features
 
-```bash
-stripe login
-```
+## Authentication System
 
-Use the included setup script to create your `.env` file:
+- Email and password authentication
+- Secure session handling using JWT tokens stored in cookies
+- Protected routes using Next.js middleware
 
-```bash
-pnpm db:setup
-```
+---
 
-Run the database migrations and seed the database with a default user and team:
+## User Dashboard
 
-```bash
-pnpm db:migrate
-pnpm db:seed
-```
+Authenticated users get access to a dashboard where they can:
 
-This will create the following user and team:
+- Manage their profile
+- Create or join teams
+- Perform CRUD operations on team members
+- View account activity
 
-- User: `test@test.com`
-- Password: `admin123`
+---
 
-You can also create new users through the `/sign-up` route.
+## Role Based Access Control (RBAC)
 
-Finally, run the Next.js development server:
+The system includes basic RBAC with two roles:
 
-```bash
-pnpm dev
-```
+| Role | Permissions |
+|-----|-------------|
+| Owner | Manage team members and billing |
+| Member | Limited access to team resources |
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
+---
 
-You can listen for Stripe webhooks locally through their CLI to handle subscription change events:
+## Subscription Billing
 
-```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-```
+Stripe integration enables SaaS billing workflows:
 
-## Testing Payments
+- Pricing page connected to Stripe Checkout
+- Subscription lifecycle management
+- Billing management via Stripe Customer Portal
+- Webhook support for subscription updates
 
-To test Stripe payments, use the following test card details:
+---
 
-- Card Number: `4242 4242 4242 4242`
-- Expiration: Any future date
-- CVC: Any 3-digit number
+## Activity Logging
 
-## Going to Production
+An event logging system tracks important actions such as:
 
-When you're ready to deploy your SaaS application to production, follow these steps:
+- User registration
+- Login events
+- Team creation
+- Subscription changes
 
-### Set up a production Stripe webhook
+This allows monitoring and auditing of application activity.
 
-1. Go to the Stripe Dashboard and create a new webhook for your production environment.
-2. Set the endpoint URL to your production API route (e.g., `https://yourdomain.com/api/stripe/webhook`).
-3. Select the events you want to listen for (e.g., `checkout.session.completed`, `customer.subscription.updated`).
+---
 
-### Deploy to Vercel
+# Tech Stack
 
-1. Push your code to a GitHub repository.
-2. Connect your repository to [Vercel](https://vercel.com/) and deploy it.
-3. Follow the Vercel deployment process, which will guide you through setting up your project.
+| Layer | Technology |
+|------|------------|
+| Framework | Next.js |
+| Frontend | React |
+| Database | PostgreSQL |
+| ORM | Drizzle ORM |
+| Payments | Stripe |
+| UI Components | shadcn/ui |
+| Validation | Zod |
+| Deployment | Vercel |
 
-### Add environment variables
+---
 
-In your Vercel project settings (or during deployment), add all the necessary environment variables. Make sure to update the values for the production environment, including:
-
-1. `BASE_URL`: Set this to your production domain.
-2. `STRIPE_SECRET_KEY`: Use your Stripe secret key for the production environment.
-3. `STRIPE_WEBHOOK_SECRET`: Use the webhook secret from the production webhook you created in step 1.
-4. `POSTGRES_URL`: Set this to your production database URL.
-5. `AUTH_SECRET`: Set this to a random string. `openssl rand -base64 32` will generate one.
-
-## Other Templates
-
-While this template is intentionally minimal and to be used as a learning resource, there are other paid versions in the community which are more full-featured:
-
-- https://achromatic.dev
-- https://shipfa.st
-- https://makerkit.dev
-- https://zerotoshipped.com
-- https://turbostarter.dev
